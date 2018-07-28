@@ -8,7 +8,8 @@
     "build": "react-scripts-ts build",
     "test": "react-scripts-ts test --env=jsdom",
     "eject": "react-scripts-ts eject",
-    "deploy": "now switch autotune-dashboard && now --public && now alias -A now.json"
+    "deploy": "now switch autotune-dashboard && now --public && now alias -A now.json",
+    "deploy:ci": "now -T autotune-dashboard -t $NOW_TOKEN -p && now alias -A now.json -T autotune-dashboard -t $NOW_TOKEN"
   },
   "dependencies": {
     "@material-ui/core": "^1.4.1",

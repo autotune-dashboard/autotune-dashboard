@@ -16,7 +16,13 @@
     "noImplicitAny": true,
     "strictNullChecks": true,
     "suppressImplicitAnyIndexErrors": true,
-    "noUnusedLocals": true
+    "noUnusedLocals": true,
+    "paths": {
+      "@stores": ["src/stores"],
+      "@stores/*": ["src/stores/*"],
+      "@views": ["src/views"],
+      "@views/*": ["src/views/*"]
+    }
   },
   "exclude": [
     "node_modules",

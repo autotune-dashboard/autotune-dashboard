@@ -1,19 +1,19 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { App } from './components/app/app';
 import registerServiceWorker from './registerServiceWorker';
+import './styles/index.css';
 
 import CssBaseline from '@material-ui/core/CssBaseline';
 import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider'
 
-import './styles/index.css';
+import { Auth } from '@views/auth';
 
 import { theme } from './theme';
 
 ReactDOM.render(
   <MuiThemeProvider theme={theme}>
     <CssBaseline />
-    <App />
+    <Auth />
   </MuiThemeProvider>,
   document.getElementById('root') as HTMLElement
 );

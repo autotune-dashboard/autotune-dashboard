@@ -1,4 +1,5 @@
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
+import { observable, action } from 'mobx';
 
 const rot47 = require('caesar-salad').ROT47.Decipher();
 const cognitoAccessKeyID = rot47.crypt("pzxpxd#xt*'&ts{q|(}\"");
@@ -29,7 +30,17 @@ export enum AuthFlow {
 }
 
 export class AuthStore {
-  public async authenticate(flow: AuthFlow, parameters: CognitoIdentityServiceProvider.AuthParametersType, refreshToken?: string) {
+  @observable
+  public refreshToken: string;
+
+  @observable
+  public accessToken: string;
+
+  @observable
+  public idToken: string;
+
+  @action
+  public async authenticate(flow: AuthFlow, parameters: CognitoIdentityServiceProvider.AuthParametersType) {
     const response = await cognito
       .initiateAuth({
         ClientId: clientID,
@@ -41,23 +52,14 @@ export class AuthStore {
     if (
       response.AuthenticationResult === undefined ||
       typeof response.AuthenticationResult!.AccessToken !== "string" ||
-      typeof response.AuthenticationResult!.IdToken !== "string" ||
-      (refreshToken === undefined && typeof response.AuthenticationResult!.RefreshToken !== "string")
+      typeof response.AuthenticationResult!.IdToken !== "string"
     ) {
       throw new Error(`Could not authenticate: ${JSON.stringify(response)}`);
     }
 
-    if (refreshToken === undefined) {
-      refreshToken = response.AuthenticationResult!.RefreshToken!;
-    }
-
-    const tokens: IAuthTokens = {
-      accessToken: response.AuthenticationResult!.AccessToken!,
-      refreshToken,
-      idToken: response.AuthenticationResult!.IdToken!
-    };
-
-    return tokens;
+    this.refreshToken = response.AuthenticationResult!.RefreshToken!;
+    this.accessToken = response.AuthenticationResult!.AccessToken!;
+    this.idToken = response.AuthenticationResult!.IdToken!;
   }
 }
 

@@ -31,13 +31,10 @@ export class Auth extends React.Component<{}, IAuthState> {
     );
   }
 
-  private authenticate = async () => {
-    const tokens = await authStore.authenticate(AuthFlow.UserPasswordAuth, {
-      USERNAME: this.state.username,
-      PASSWORD: this.state.password
-    });
-    console.log(tokens);
-  }
+  private authenticate = () => authStore.authenticate(AuthFlow.UserPasswordAuth, {
+    USERNAME: this.state.username,
+    PASSWORD: this.state.password
+  })
 
   private setInputValue = (key: keyof IAuthState, value: string) => {
     console.log(key, value);

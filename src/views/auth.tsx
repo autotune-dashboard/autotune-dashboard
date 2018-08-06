@@ -1,47 +1,23 @@
 import * as React from 'react';
-import './auth.css';
+import { RouteComponentProps } from 'react-router-dom';
 
 import Button from '@material-ui/core/Button'
-import Card from '@material-ui/core/Card'
-import Input from '@material-ui/core/Input'
+import TextField from '@material-ui/core/TextField'
+import Grid from '@material-ui/core/Grid';
 
-import { authStore, AuthFlow } from '@stores/auth';
-
-export interface IAuthState {
-  username: string;
-  password: string;
-}
-
-export class Auth extends React.Component<{}, IAuthState> {
-  constructor(props: {}) {
-    super(props);
-    this.state = {
-      username: "",
-      password: ""
-    };
-  }
-
+export class Auth extends React.Component<RouteComponentProps<{}>> {
   public render() {
     return (
-      <Card className="auth">
-        <Input name="username" type="email" value={this.state.username} onChange={this.onUsernameChange} />
-        <Input name="password" type="password" value={this.state.password} onChange={this.onPasswordChange} />
-        <Button variant="contained" color="primary" onClick={this.authenticate}>test</Button>
-      </Card>
+      <Grid container spacing={16} direction='row' alignItems='center' justify='space-around' style={{ height: '100%' }}>
+        <Grid item xs={12} sm={6} md={4}>
+          <form noValidate autoComplete='off' style={{ display: 'flex', flexFlow: 'column', margin: 16, flexWrap: 'wrap' }}>
+            <TextField margin='dense' name='username' label='email' type='email' />
+            <TextField margin='dense' name='password' label='password' type='password' />
+            <Button variant='contained' color='primary'>login</Button>
+          </form>
+        </Grid>
+        <Grid item sm={6} md={8}>login</Grid>
+      </Grid>
     );
   }
-
-  private authenticate = () => authStore.authenticate(AuthFlow.UserPasswordAuth, {
-    USERNAME: this.state.username,
-    PASSWORD: this.state.password
-  })
-
-  private setInputValue = (key: keyof IAuthState, value: string) => {
-    console.log(key, value);
-    return this.setState(prev => ({ ...prev, [key]: value }));
-  }
-
-  private onUsernameChange = (event: any) => this.setInputValue("username", event.target.value);
-
-  private onPasswordChange = (event: any) => this.setInputValue("password", event.target.value);
 }

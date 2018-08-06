@@ -21,6 +21,8 @@
     "paths": {
       "@stores": ["src/stores"],
       "@stores/*": ["src/stores/*"],
+      "@ui": ["src/components"],
+      "@ui/*": ["src/components/*"],
       "@views": ["src/views"],
       "@views/*": ["src/views/*"]
     }

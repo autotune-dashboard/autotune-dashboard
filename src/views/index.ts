@@ -1,3 +1,3 @@
-export * from './root';
-export * from './auth';
-export * from './apps';
+export * from '@views/root';
+export * from '@views/auth';
+export * from '@views/apps';

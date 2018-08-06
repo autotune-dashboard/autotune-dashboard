@@ -1,8 +1,8 @@
-import { authStore } from './auth';
-import { appsStore } from './apps';
+import { authStore } from '@stores/auth';
+import { appsStore } from '@stores/apps';
 
-export * from './auth';
-export * from './apps';
+export * from '@stores/auth';
+export * from '@stores/apps';
 
 export const stores = {
   authStore,

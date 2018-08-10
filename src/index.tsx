@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import registerServiceWorker from './registerServiceWorker';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Redirect, Switch } from 'react-router-dom';
 import { Provider } from 'mobx-react';
 
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -20,10 +20,11 @@ ReactDOM.render((
     <Router>
       <Provider {...stores}>
         <App>
+          <Redirect from='/' to='/apps' />
           <Switch>
             <Route path='/auth' component={Auth} />
             <Route path='/' component={Root}>
-              <Route path='/' component={Apps} />
+              <Route path='/apps' component={Apps} />
             </Route>
           </Switch>
         </App>

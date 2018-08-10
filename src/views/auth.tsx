@@ -39,10 +39,10 @@ export const Auth = withStyles(styles)(
       const { classes } = this.props;
       return (
         <Grid className={classes.root} container>
-          <Grid className={classes.left} item xs={12} md={6}>
+          <Grid className={classes.left} item xs={12} md={7}>
             <Grid className={classes.wrapper} container justify='center' alignItems='center' direction='column'>
               <Grid className={classes.container} container justify='space-around' alignItems='flex-start' direction='column'>
-                <Typography variant="display1" gutterBottom>
+                <Typography variant='display1' gutterBottom>
                   Login
                 </Typography>
                 <TextField className={classes.formItem} label='email' />
@@ -51,7 +51,7 @@ export const Auth = withStyles(styles)(
               </Grid>
             </Grid>
           </Grid>
-          <Grid className={classes.right} item xs={12} md={6} />
+          <Grid className={classes.right} item xs={12} md={5} />
         </Grid>
       );
     }

@@ -20,10 +20,10 @@ ReactDOM.render((
     <Router>
       <Provider {...stores}>
         <App>
-          <Redirect from='/' to='/apps' />
           <Switch>
             <Route path='/auth' component={Auth} />
             <Route path='/' component={Root}>
+              <Redirect from='/' to='/apps' />
               <Route path='/apps' component={Apps} />
             </Route>
           </Switch>

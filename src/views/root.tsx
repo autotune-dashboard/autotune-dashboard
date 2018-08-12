@@ -7,6 +7,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import IconButton from '@material-ui/core/IconButton';
 import AccountCircle from '@material-ui/icons/AccountCircle';
+import { Logo } from '@ui/logo';
 
 const styles = (({ palette, spacing }: Theme) => createStyles({
   root: {
@@ -28,6 +29,8 @@ export const Root = withStyles(styles)(
         <Grid className={classes.root} container direction='column'>
           <AppBar position='static'>
             <Toolbar>
+              <Logo />
+              <div className={classes.flex} />
               <IconButton aria-haspopup='true' color='inherit'>
                 <AccountCircle />
               </IconButton>

@@ -6,6 +6,7 @@ import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
+import { Logo } from '@ui/logo';
 
 const styles = (({ palette, spacing }: Theme) => createStyles({
   root: {
@@ -22,11 +23,17 @@ const styles = (({ palette, spacing }: Theme) => createStyles({
     flexGrow: 1
   },
   container: {
-    maxWidth: 320
+    maxWidth: 400
   },
   formItem: {
     marginBottom: spacing.unit * 2,
     width: '100%'
+  },
+  title: {
+    marginBottom: spacing.unit * 2
+  },
+  logo: {
+    marginRight: spacing.unit * 2
   }
 }));
 
@@ -42,9 +49,12 @@ export const Auth = withStyles(styles)(
           <Grid className={classes.left} item xs={12} md={7}>
             <Grid className={classes.wrapper} container justify='center' alignItems='center' direction='column'>
               <Grid className={classes.container} container justify='space-around' alignItems='flex-start' direction='column'>
-                <Typography variant='display1' gutterBottom>
-                  Login
-                </Typography>
+                <Grid className={classes.title} container alignItems='center' direction='row'>
+                  <Logo className={classes.logo} />
+                  <Typography variant='display1'>
+                    Autotune
+                  </Typography>
+                </Grid>
                 <TextField className={classes.formItem} label='email' />
                 <TextField className={classes.formItem} label='password' />
                 <Button variant='contained' color='primary'>Login</Button>

@@ -23,7 +23,7 @@ const styles = (({ palette, spacing }: Theme) => createStyles({
     flexGrow: 1
   },
   container: {
-    maxWidth: 400
+    maxWidth: 320
   },
   formItem: {
     marginBottom: spacing.unit * 2,

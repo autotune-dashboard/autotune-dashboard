@@ -23,7 +23,10 @@ class AppRoot extends React.Component {
         <Router>
           <App>
             <Switch>
-              {authStore.isAuthorized && <Redirect exact from='/auth' to='/' />}
+              {authStore.isAuthorized
+                ? <Redirect exact from='/auth' to='/' />
+                : <Redirect exact from='/' to='/auth' />
+              }
               <Route exact path='/auth' component={Auth} />
               <Route exact path='/' component={Root} />
             </Switch>

@@ -5,7 +5,10 @@
     "object-literal-sort-keys": false,
     "no-require-imports": false,
     "no-var-requires": false,
-    "no-console": false
+    "no-console": false,
+    "jsx-boolean-value": false,
+    "member-ordering": false,
+    "max-classes-per-file": false
   },
   "linterOptions": {
     "exclude": [

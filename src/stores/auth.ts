@@ -1,15 +1,12 @@
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
-// import { observable, action } from 'mobx';
+import { FetchStore, FetchState } from '@utils';
+import { computed } from 'mobx';
 // import { decode } from "jsonwebtoken";
-
-// import { Storage } from './storage';
 
 const rot47 = require('caesar-salad').ROT47.Decipher();
 const cognitoAccessKeyID = rot47.crypt("pzxpxd#xt*'&ts{q|(}\"");
 const cognitoSecretAccessKey = rot47.crypt("xAC%<Gt;!)G+{:9s)Df*K23Hx@H:{'<:Z>+tKFe*");
 export const clientID = "104m4anpa00b724preu1dco9vj";
-
-// const USER_INFO_KEY = 'user_info';
 
 export const cognito = new CognitoIdentityServiceProvider({
   region: "us-east-2",
@@ -22,23 +19,76 @@ export enum AuthFlow {
   RefreshTokenAuth = "REFRESH_TOKEN_AUTH"
 }
 
-export interface IUSer {
+export interface IUser {
   username: string;
   accessToken: string;
   refreshToken: string;
+  idToken: string;
 }
 
-export class AuthStore {
-  public get token(): string {
-    return '';
+export interface IAuthRequest {
+  flow: AuthFlow;
+  parameters: CognitoIdentityServiceProvider.AuthParametersType;
+}
+
+const STORAGE_KEY = 'auth.user';
+
+export class AuthStore extends FetchStore<IUser, IAuthRequest> {
+  constructor() {
+    super();
+    const user = localStorage.getItem(STORAGE_KEY);
+    if (user) {
+      try {
+        this.setData(JSON.parse(user) as IUser);
+      } catch (err) {
+        console.log('faled to parse storage');
+      }
+    }
   }
 
-  public async login(username: string, password: string) {
-    return {};
+  @computed
+  public get isAuthorized() {
+    return this.state === FetchState.Success;
   }
 
-  public async logout() {
-    return null;
+  protected postSuccess() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(this.data));
+  }
+
+  protected promise(request: IAuthRequest): Promise<IUser> {
+    return cognito
+      .initiateAuth({
+        ClientId: clientID,
+        AuthFlow: request.flow,
+        AuthParameters: request.parameters
+      })
+      .promise()
+      .then(response => {
+        const user = {
+          username: request.flow === AuthFlow.UserPasswordAuth
+            ? request.parameters.USERNAME
+            : this.data.username,
+          refreshToken: response.AuthenticationResult!.RefreshToken!,
+          accessToken: response.AuthenticationResult!.AccessToken!,
+          idToken: response.AuthenticationResult!.IdToken!
+        };
+        return user;
+      });
+  }
+
+  public login(username: string, password: string) {
+    return this.fetch({
+      flow: AuthFlow.UserPasswordAuth,
+      parameters: {
+        USERNAME: username,
+        PASSWORD: password
+      }
+    });
+  }
+
+  public logout() {
+    localStorage.removeItem(STORAGE_KEY);
+    this.reset();
   }
 }
 

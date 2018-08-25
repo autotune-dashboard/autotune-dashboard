@@ -24,7 +24,9 @@
       "@ui": ["src/components"],
       "@ui/*": ["src/components/*"],
       "@views": ["src/views"],
-      "@views/*": ["src/views/*"]
+      "@views/*": ["src/views/*"],
+      "@utils": ["src/utils"],
+      "@utils/*": ["src/utils/*"]
     }
   },
   "exclude": [

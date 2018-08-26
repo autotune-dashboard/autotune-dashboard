@@ -11,8 +11,10 @@
   "dependencies": {
     "@material-ui/core": "^1.4.1",
     "@material-ui/icons": "^2.0.1",
+    "apollo-boost": "^0.1.14",
     "aws-sdk": "^2.283.1",
     "caesar-salad": "^1.0.1",
+    "graphql": "^0.13.2",
     "jsonwebtoken": "^8.3.0",
     "mobx": "^5.0.3",
     "mobx-react": "^5.2.3",

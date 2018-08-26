@@ -1,7 +1,7 @@
 import { CognitoIdentityServiceProvider } from 'aws-sdk';
 import { FetchStore, FetchState } from '@utils';
 import { computed } from 'mobx';
-// import { decode } from "jsonwebtoken";
+import { decode } from "jsonwebtoken";
 
 const rot47 = require('caesar-salad').ROT47.Decipher();
 const cognitoAccessKeyID = rot47.crypt("pzxpxd#xt*'&ts{q|(}\"");
@@ -34,6 +34,8 @@ export interface IAuthRequest {
 const STORAGE_KEY = 'auth.user';
 
 export class AuthStore extends FetchStore<IUser, IAuthRequest> {
+  private expiration: number;
+
   constructor() {
     super();
     const user = localStorage.getItem(STORAGE_KEY);
@@ -48,7 +50,7 @@ export class AuthStore extends FetchStore<IUser, IAuthRequest> {
 
   @computed
   public get isAuthorized() {
-    return this.state === FetchState.Success;
+    return this.data && (this.state === FetchState.Success || this.state === FetchState.Loading);
   }
 
   protected postSuccess() {
@@ -70,7 +72,9 @@ export class AuthStore extends FetchStore<IUser, IAuthRequest> {
             : this.data.username,
           refreshToken: response.AuthenticationResult!.RefreshToken!,
           accessToken: response.AuthenticationResult!.AccessToken!,
-          idToken: response.AuthenticationResult!.IdToken!
+          idToken: request.flow === AuthFlow.UserPasswordAuth
+            ? response.AuthenticationResult!.IdToken!
+            : this.data.refreshToken
         };
         return user;
       });
@@ -90,121 +94,33 @@ export class AuthStore extends FetchStore<IUser, IAuthRequest> {
     localStorage.removeItem(STORAGE_KEY);
     this.reset();
   }
+
+  public refresh() {
+    return this.fetch({
+      flow: AuthFlow.RefreshTokenAuth,
+      parameters: {
+        REFRESH_TOKEN: this.data.refreshToken
+      }
+    });
+  }
+
+  public checkAuth() {
+    if (this.isAuthorized) {
+      if (!this.expiration) {
+        const { idToken } = this.data;
+        const decoded = decode(idToken);
+        if (typeof decoded === "object" && decoded !== null && typeof decoded.exp === "number") {
+          this.expiration = decoded.exp;
+        }
+        if (this.expiration <= Date.now() / 1000 + 5) {
+          return this.refresh();
+        }
+      }
+    }
+    return Promise.resolve(this.data);
+  }
 }
 
-// class AuthStoreOld {
-//   @observable
-//   public username: string;
-
-//   @observable
-//   public refreshToken: string;
-
-//   @observable
-//   public accessToken: string;
-
-//   @observable
-//   public idToken: string;
-
-//   @action
-//   public async authenticate(flow: AuthFlow, parameters: CognitoIdentityServiceProvider.AuthParametersType) {
-//     const response = await cognito
-//       .initiateAuth({
-//         ClientId: clientID,
-//         AuthFlow: flow,
-//         AuthParameters: parameters
-//       })
-//       .promise();
-
-//     if (
-//       response.AuthenticationResult === undefined ||
-//       typeof response.AuthenticationResult!.AccessToken !== "string" ||
-//       typeof response.AuthenticationResult!.IdToken !== "string"
-//     ) {
-//       throw new Error(`Could not authenticate: ${JSON.stringify(response)}`);
-//     }
-
-//     this.refreshToken = response.AuthenticationResult!.RefreshToken!;
-//     this.accessToken = response.AuthenticationResult!.AccessToken!;
-//     this.idToken = response.AuthenticationResult!.IdToken!;
-//   }
-
-//   @action
-//   public async login(username: string, password: string) {
-//     Storage.clean();
-
-//     await this.authenticate(AuthFlow.UserPasswordAuth, {
-//       USERNAME: username,
-//       PASSWORD: password
-//     });
-
-//     this.username = username;
-
-//     Storage.set(USER_INFO_KEY, {
-//       username,
-//       refreshToken: this.refreshToken,
-//       accessToken: this.accessToken,
-//       idToken: this.idToken
-//     });
-//   }
-
-//   @action
-//   public logout() {
-//     this.username = "";
-//     this.accessToken = "";
-//     this.refreshToken = "";
-//     this.idToken = "";
-
-//     Storage.clean();
-//   }
-
-//   @action
-//   public async refresh() {
-//     await this.authenticate(AuthFlow.RefreshTokenAuth, {
-//       REFRESH_TOKEN: this.refreshToken
-//     });
-
-//     this.setUser();
-//   }
-
-//   public getUser() {
-//     const user = Storage.get(USER_INFO_KEY);
-
-//     if (user) {
-//       this.username = user.username;
-//       this.accessToken = user.accessToken;
-//       this.refreshToken = user.refreshToken;
-//       this.idToken = user.idToken;
-//     }
-
-//     return user;
-//   }
-
-//   public setUser() {
-//     Storage.set(USER_INFO_KEY, {
-//       username: this.username,
-//       refreshToken: this.refreshToken,
-//       accessToken: this.accessToken,
-//       idToken: this.idToken
-//     });
-//   }
-
-//   @action
-//   public async isAuthorized() {
-//     if (!this.accessToken) {
-//       const user = this.getUser();
-//       if (!user) {
-//         return false;
-//       }
-
-//       const decoded = decode(this.idToken);
-//       if (typeof decoded === "object" && decoded !== null && typeof decoded.exp === "number") {
-//         if (decoded.exp <= Date.now() / 1000 + 5) {
-//           await this.refresh();
-//         }
-//       }
-//     }
-//     return true;
-//   }
-// }
-
 export const authStore = new AuthStore();
+
+(window as any).auth = authStore;

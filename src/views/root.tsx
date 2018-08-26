@@ -13,13 +13,15 @@ import { Apps } from '@views/apps';
 
 const styles = (({ palette, spacing }: Theme) => createStyles({
   root: {
-    flexGrow: 1
+    flexGrow: 1,
+    height: '100%'
   },
   flex: {
     flex: 1
   },
   content: {
-    flex: 1
+    flex: 1,
+    height: 'calc(100% - 64px)'
   }
 }));
 
@@ -43,7 +45,7 @@ export const Root = withStyles(styles)(
           </AppBar>
           <div className={classes.content}>
             <Switch>
-              <Route path='/apps' component={Apps} />
+              <Route path='/' component={Apps} />
             </Switch>
           </div>
         </Grid>
